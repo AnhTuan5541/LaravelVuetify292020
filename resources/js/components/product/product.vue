@@ -1,7 +1,7 @@
 <template>
   <div class="content-wrapper">
     <!-- Content Header (Page header) -->
-    <section class="content-header">
+    <!-- <section class="content-header">
       <div class="container-fluid">
         <div class="row mb-2">
           <div class="col-sm-6">
@@ -17,8 +17,7 @@
           </div>
         </div>
       </div>
-      <!-- /.container-fluid -->
-    </section>
+    </section> -->
 
     <!-- Main content -->
     <section class="content">
@@ -29,7 +28,7 @@
             <!-- <v-container class="fill-height" fluid> -->
             <v-card>
               <v-card-title>
-                Nutrition
+                Product
                 <v-spacer></v-spacer>
                 <v-text-field
                   v-model="search"
@@ -139,6 +138,7 @@ export default {
       search: "",
       dialog: false,
       headers: [
+        { text: 'Id', value: 'id' },
         {
           text: 'Product Name',
           align: 'start',
@@ -160,6 +160,7 @@ export default {
         name: '',
         price: 0,
       },
+      error: [],
     };
   },
 
@@ -173,40 +174,66 @@ export default {
         },
       },
     },
-    watch: {
-      dialog (val) {
-        val || this.close()
-      },
+  watch: {
+    dialog (val) {
+      val || this.close()
     },
-    created () {
-      this.$store.dispatch("product/getProducts");
+  },
+  created () {
+    this.$store.dispatch("product/getProducts");
+  },
+  methods: {
+    editItem (item) {
+      this.editedIndex = this.products.indexOf(item)
+      this.editedItem = Object.assign({}, item)
+      this.dialog = true
     },
-    methods: {
-      editItem (item) {
-        this.editedIndex = this.products.indexOf(item)
-        this.editedItem = Object.assign({}, item)
-        this.dialog = true
-      },
-      deleteItem (item) {
-        const index = this.products.indexOf(item)
-        confirm('Are you sure you want to delete this item?') && this.products.splice(index, 1)
-      },
-      close () {
-        this.dialog = false
-        this.$nextTick(() => {
-          this.editedItem = Object.assign({}, this.defaultItem)
-          this.editedIndex = -1
+    deleteItem (item) {
+      const index = this.products.indexOf(item)
+      confirm('Are you sure you want to delete this item?') && this.products.splice(index, 1)
+    },
+    close () {
+      this.dialog = false
+      this.$nextTick(() => {
+        this.editedItem = Object.assign({}, this.defaultItem)
+        this.editedIndex = -1
+      })
+    },
+    save () {
+      // edit item
+      if (this.editedIndex > -1) {
+        const index = this.editedIndex
+        const name = this.editedItem.name
+        const price = this.editedItem.price
+        axios.put('api/v1/product/update/' + this.editedItem.id, {
+          name : this.editedItem.name,
+          price: this.editedItem.price
         })
-      },
-      save () {
-        if (this.editedIndex > -1) {
-          
-          Object.assign(this.products[this.editedIndex], this.editedItem)
-        } else {
-          this.products.push(this.editedItem)
-        }
-        this.close()
-      },
+        .then((response) => {
+          // Object.assign(this.products[this.editedIndex], this.editedItem)
+          this.products[index].name = name
+          this.products[index].price = price
+        })
+        .catch((error) => {
+          console.log(error.response.data.errors.name)
+        })
+      } 
+      // add item
+      else {
+        // this.products.unshift(this.editedItem)
+        axios.post('api/v1/product/store', {
+          name : this.editedItem.name,
+          price: this.editedItem.price
+        })
+        .then((response) => {
+          this.products.unshift(response.data.product)
+        })
+        .catch((error) => {
+          console.log(error.response.data.errors.name)
+        })
+      }
+      this.close()
     },
+  },
 };
 </script>

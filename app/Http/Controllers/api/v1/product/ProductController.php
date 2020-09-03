@@ -15,7 +15,7 @@ class ProductController extends Controller
      */
     public function index()
     {
-        return Product::all();
+        return Product::orderBy('id', 'DESC')->get();
     }
 
     /**
@@ -36,7 +36,19 @@ class ProductController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $this->validate($request, [
+            'name' => 'required|min:5',
+            'price' => 'required'
+        ]);
+
+        $product = Product::create([
+            'name' => $request->input('name'),
+            'price' => $request->input('price')
+        ]);
+
+        return response([
+            'product' => $product
+        ], 200);
     }
 
     /**
@@ -70,7 +82,21 @@ class ProductController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $this->validate($request, [
+            'name' => 'required|min:5',
+            'price' => 'required',
+        ]);
+    
+        $product = Product::find($id);
+    
+        $product->name = $request->input('name');
+        $product->price = $request->input('price');
+        
+        $product->save();
+    
+        return response([
+            'product' => $product
+        ], 200);
     }
 
     /**

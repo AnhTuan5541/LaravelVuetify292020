@@ -19,7 +19,7 @@ class UserSeeder extends Seeder
             $user = User::create([
                 'name' => $faker->name,
                 'email' => $faker->unique()->email,
-                'password' => '$2y$10$.jH03blGymX4ppw2fzOwr.IHmvG4lxnkNvRsCwqkPTLDuun6TK/kG',
+                'password' => bcrypt('qwertyuiop'),
             ]);
         }
     }

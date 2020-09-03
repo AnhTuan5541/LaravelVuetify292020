@@ -19,7 +19,7 @@ class ProductSeeder extends Seeder
 
         foreach(range(1, 100) as $i) {
             $product = Product::create([
-                'name' => $faker->word,
+                'name' => $faker->company,
                 'price' => rand(100000, 1000000),
             ]);
         }
