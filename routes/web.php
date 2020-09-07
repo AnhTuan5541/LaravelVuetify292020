@@ -20,3 +20,12 @@ Route::get('/', function () {
 Auth::routes();
 
 Route::get('/app', 'AppController@index')->name('app');
+
+use Spatie\Permission\Models\Role;
+use Spatie\Permission\Models\Permission;
+Route::get('/test-permission', function() {
+    $role = Role::create(['name' => 'normal_user']);
+    $permission = Permission::create(['name' => 'add products']);
+    $permission->assignRole($role);
+
+});

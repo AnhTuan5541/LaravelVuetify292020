@@ -20,7 +20,11 @@ class UserController extends Controller
     }
 
     public function currentUser() {
-        return Auth::user();
+        $user = Auth::user();
+        $role = Role::create(['name' => 'normal_user']);
+        $permission = Permission::create(['name' => 'add products']);
+        $permission->assignRole($role);
+        $user->givePermissionTo('edit articles');
     }
 
     /**

@@ -36,11 +36,6 @@
         }
       }
     },
-    methods: {
-      logout() {
-          this.$store.dispatch('currentUser/logoutUser')
-      }
-    },
     created() {
       if ( localStorage.getItem('LaravelVuetify_token') ) {
         axios.defaults.headers.common["Authorization"] = "Bearer " + localStorage.getItem('LaravelVuetify_token');
